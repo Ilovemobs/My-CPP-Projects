@@ -2,14 +2,22 @@
 #include "raylib.h"
 using namespace std;
 
+Color Hit = Color{ 224, 211, 173, 255 };
+Color Blue = Color{ 27, 35, 48 , 255 };
+Color Maroon = Color{ 64, 31, 54 , 255 };
+Color Gray = Color{ 35, 35, 36 , 255 };
+
+int player_score = 0;
+int cpu_score = 0;
+
 class Ball {
 public:
-	int x, y;
+	float x, y;          // Changed from int to float to match Vector2
 	int speed_x, speed_y;
 	short int radius;
 
 	void Draw() {
-		DrawCircle(x, y, radius, WHITE);
+		DrawCircle((int)x, (int)y, radius, Hit);
 	}
 	void Update()
 	{
@@ -23,6 +31,11 @@ public:
 		if (x + radius >= GetScreenWidth() || x - radius <= 0)
 		{
 			speed_x *= -1;
+			if (x - radius <= 0) {
+				player_score++;
+			} else {
+				cpu_score++;
+			}
 		}
 	}
 };
@@ -46,8 +59,7 @@ public:
 	int speed;
 
 	void Draw() {
-		DrawRectangle(x, y, width, height, WHITE);
-
+		DrawRectangleRounded(Rectangle{ x, y, width, height }, 0.8f, 4, WHITE); 
 	}
 
 	void Update() {
@@ -66,7 +78,7 @@ public:
 
 class CpuPaddle : public Paddle {
 public:
-	void Update(int ball_y)
+	void Update(float ball_y)  // Changed parameter from int to float
 	{
 		if (y + height / 2 > ball_y)
 		{
@@ -112,13 +124,26 @@ int main() {
 		BeginDrawing();
 
 		ball.Update();
-		ClearBackground(BLACK);
+		ClearBackground(Maroon);
 		ball.Draw();
 		cpu.Update(ball.y);
+
+		if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ player.x, player.y, player.width, player.height }))
+		{
+			ball.speed_x *= -1;
+		}
+
+		if (CheckCollisionCircleRec(Vector2{ ball.x, ball.y }, ball.radius, Rectangle{ cpu.x, cpu.y, cpu.width, cpu.height }))
+		{
+			ball.speed_x *= -1;
+		}
+
 		DrawLine((screen_width / 2) - 1, 0, (screen_width / 2) + 1, screen_height, WHITE);
 		player.Draw();
 		cpu.Draw();
 		player.Update();
+		DrawText(TextFormat("Player: %i", player_score), screen_width / 2 + 20, 10, 20, WHITE);
+		DrawText(TextFormat("CPU: %i", cpu_score), screen_width / 2 - 80, 10, 20, WHITE);
 		EndDrawing();
 	}
 
