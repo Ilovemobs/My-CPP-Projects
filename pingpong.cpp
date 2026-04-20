@@ -12,7 +12,7 @@ int cpu_score = 0;
 
 class Ball {
 public:
-	float x, y;          // Changed from int to float to match Vector2
+	float x, y;        
 	int speed_x, speed_y;
 	short int radius;
 
@@ -78,7 +78,7 @@ public:
 
 class CpuPaddle : public Paddle {
 public:
-	void Update(float ball_y)  // Changed parameter from int to float
+	void Update(float ball_y)  
 	{
 		if (y + height / 2 > ball_y)
 		{
@@ -150,3 +150,4 @@ int main() {
 	CloseWindow();
 	return 0;
 }
+// I know that the computer to beat, I'm working on it.
